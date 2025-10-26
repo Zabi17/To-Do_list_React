@@ -1,66 +1,47 @@
-import { useState } from "react";
-import "./App.css";
+import React, { useState } from "react";
+import Strike from "./Strike.jsx";
 
 function App() {
-  const [task, setTask] = useState(""); // hold typing
-  const [submit, setSubmit] = useState([]); //hold submit
+  const [item, setItem] = useState("");
+  const [store, setStore] = useState([]);
 
-  function handleChange(e) {
-    setTask(e.target.value);
+  function handleChange(event) {
+    setItem(event.target.value);
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!task.trim()) return;
-    const newTask = { currentTask: task, done: false };
-    setSubmit([...submit, newTask]);
-    setTask("");
-  }
-  console.log(submit);
-
-  function removeList(banana) {
-    const newArray = submit.filter((ele, index) => index !== banana);
-    setSubmit(newArray);
-  }
-
-  function handleCheckbox(index) {
-    const copy = [...submit]; // cloning array so we dont change the state directly
-    copy[index].done = !copy[index].done; // flip the value,
-    setSubmit(copy); // update state
+  function handleSubmit() {
+    if (item == "") return;
+    const checkbox = { currentValue: item, done: false };
+    setStore((s) => [...s, checkbox]); //or setStore([...store, item])
+    setItem("");
   }
 
   return (
     <div className="container">
-      <form onSubmit={handleSubmit}>
-        <h1>To Do List</h1>
-        <div className="center">
-          <input
-            type="text"
-            value={task}
-            name="lists"
-            placeholder="Enter your task here !"
-            onChange={handleChange}
-          />
-          <input name="butt" type="submit" />
-        </div>
-
-        <ol className="ol">
-          {submit.map((ele, index) => (
-            <li key={index} className={ele.done ? "done" : ""}>
-              <div className="left">
-                <input
-                  type="checkbox"
-                  checked={ele.done}
-                  onChange={() => handleCheckbox(index)}
-                />
-                <span>{ele.currentTask}</span>
-              </div>
-              <button onClick={() => removeList(index)}>❌</button>
-            </li>
+      <div className="heading">
+        <h1>To-Do List</h1>
+      </div>
+      <div className="form">
+        <input type="text" value={item} onChange={handleChange} />
+        <button onClick={handleSubmit}>
+          <span>Add</span>
+        </button>
+      </div>
+      <div>
+        <ol>
+          {store.map((ele, i) => (
+            <Strike
+              key={i}
+              index={i}
+              element={ele}
+              store={store}
+              setStore={setStore}
+            />
           ))}
         </ol>
-      </form>
+      </div>
     </div>
   );
 }
+
 export default App;
